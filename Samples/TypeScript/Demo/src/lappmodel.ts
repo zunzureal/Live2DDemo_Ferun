@@ -545,6 +545,7 @@ export class LAppModel extends CubismUserModel {
     priority: number,
     onFinishedMotionHandler?: FinishedMotionCallback
   ): CubismMotionQueueEntryHandle {
+
     if (priority == LAppDefine.PriorityForce) {
       this._motionManager.setReservePriority(priority);
     } else if (!this._motionManager.reserveMotion(priority)) {

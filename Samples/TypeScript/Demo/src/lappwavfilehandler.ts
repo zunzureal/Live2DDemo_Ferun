@@ -93,6 +93,13 @@ export class LAppWavFileHandler {
     this._lastRms = 0.0;
 
     if (!this.loadWavFile(filePath)) {
+      LAppPal.printMessage(`start Playing ${this._wavFileInfo._fileName}`);
+      if (typeof window.Audio === 'function') {
+        const audio:any = document.getElementById('voice');
+        audio.src = this._wavFileInfo._fileName;
+        audio.play();
+        LAppPal.printMessage(`Playing ${this._wavFileInfo._fileName}`);
+      }
       return;
     }
   }
