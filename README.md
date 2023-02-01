@@ -1,10 +1,7 @@
-[English](README.md) / [日本語](README.ja.md)
 
----
+# Live2DTutor
 
-# Cubism Web Samples
-
-This is a sample implementation of an application that displays models output by Live2D Cubism 4 Editor.
+This is a sample implementation of an application that displays models output by Live2D Cubism 4 Editor from Cubism Web Samples with Azure OpenAI and Azure Text to Speech.
 
 It is used in conjunction with the Cubism Web Framework and Live2D Cubism Core.
 
@@ -59,6 +56,15 @@ Enter `>Tasks: Run Task` in the command palette (*View > Command Palette...*) to
 For other tasks, see [README.md](Samples/TypeScript/README.md) of the sample project.
 
 NOTE: Settings for debugging are described in `.vscode/tasks.json`.
+
+### Azure OpenAI and Azure Speech service
+
+You have to create enable those 2 services yourself and collect the following 4 parameters:
+1. OpenAI Endpoint
+2. OpenAI Key
+3. Speech service Region
+4. Speech service Key
+
 
 ### Project debugging
 
