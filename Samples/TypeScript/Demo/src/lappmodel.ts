@@ -71,6 +71,7 @@ enum LoadStep {
  * モデル生成、機能コンポーネント生成、更新処理とレンダリングの呼び出しを行う。
  */
 export class LAppModel extends CubismUserModel {
+  private _audioSrc: any;
   /**
    * model3.jsonが置かれたディレクトリとファイルパスからモデルを生成する
    * @param dir
@@ -440,6 +441,8 @@ export class LAppModel extends CubismUserModel {
   /**
    * 更新
    */
+
+
   public update(): void {
     if (this._state != LoadStep.CompleteSetup) return;
 
@@ -529,6 +532,11 @@ export class LAppModel extends CubismUserModel {
     }
 
     this._model.update();
+    const audio: any = document.getElementById('voice');
+    if (audio.src !== this._audioSrc) {
+      this._audioSrc = audio.src;
+      audio.play();
+    }
   }
 
   /**

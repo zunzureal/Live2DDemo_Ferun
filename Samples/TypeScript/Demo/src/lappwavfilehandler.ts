@@ -93,69 +93,65 @@ export class LAppWavFileHandler {
     // RMS値をリセット
     this._lastRms = 0.0;
 
-    if (!this.loadWavFile(filePath)) {
-      LAppPal.printMessage(`start Playing ${this._wavFileInfo._fileName}`);
-      if (typeof window.Audio === 'function') {
-        const openaiurl = (document.getElementById("openaiurl") as any).value;
-        const openaipikey = (document.getElementById("openaipikey") as any).value;
-        const ttsregion = (document.getElementById("ttsregion") as any).value;
-        const ttsapikey = (document.getElementById("ttsapikey") as any).value;
+    const openaiurl = (document.getElementById("openaiurl") as any).value;
+    const openaipikey = (document.getElementById("openaipikey") as any).value;
+    const ttsregion = (document.getElementById("ttsregion") as any).value;
+    const ttsapikey = (document.getElementById("ttsapikey") as any).value;
 
-        const message = (document.getElementById("message") as any).value;
-        LAppPal.printMessage(message);
 
-        const m = {
-          "prompt": `##${message}\n\n`,
-          "max_tokens": 150,
-          "temperature": 0,
-          "frequency_penalty": 0,
-          "presence_penalty": 0,
-          "top_p": 1,
-          "stop": ["#", ";"]
-        }
+    const message = (document.getElementById("message") as any).value;
+    LAppPal.printMessage(message);
 
-        fetch(openaiurl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'api-key': openaipikey,
-          },
-          body: JSON.stringify(m) // body data type must match "Content-Type" header
-        })
-          .then((response) => response.json())
-          .then(j => { //OpenAI response json
-            const answer: string = j.choices[0].text
-            LAppPal.printMessage(answer);
-            (document.getElementById("reply") as any).value = answer;
+    const m = {
+      "prompt": `##${message}\n\n`,
+      "max_tokens": 150,
+      "temperature": 0,
+      "frequency_penalty": 0,
+      "presence_penalty": 0,
+      "top_p": 1,
+      "stop": ["#", ";"]
+    }
 
-            const requestHeaders: HeadersInit = new Headers();
-            requestHeaders.set('Content-Type', 'application/ssml+xml');
-            requestHeaders.set('X-Microsoft-OutputFormat', 'audio-16khz-128kbitrate-mono-mp3');
-            requestHeaders.set('Ocp-Apim-Subscription-Key', ttsapikey);
+    fetch(openaiurl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': openaipikey,
+      },
+      body: JSON.stringify(m) // body data type must match "Content-Type" header
+    })
+      .then((response) => response.json())
+      .then(j => { //OpenAI response json
+        const answer: string = j.choices[0].text
+        LAppPal.printMessage(answer);
+        (document.getElementById("reply") as any).value = answer;
 
-            const ssml = `<speak version=\'1.0\' xml:lang=\'en-US\'>
+        const requestHeaders: HeadersInit = new Headers();
+        requestHeaders.set('Content-Type', 'application/ssml+xml');
+        requestHeaders.set('X-Microsoft-OutputFormat', 'riff-8khz-16bit-mono-pcm');
+        requestHeaders.set('Ocp-Apim-Subscription-Key', ttsapikey);
+
+        const ssml = `<speak version=\'1.0\' xml:lang=\'en-US\'>
               <voice xml:lang=\'en-US\' xml:gender=\'Female\' name=\'en-US-JennyNeural\'>
                   ${answer}
               </voice>
             </speak>`
 
-            fetch(`https://${ttsregion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
-              method: 'POST',
-              headers: requestHeaders,
-              body: ssml
-            }).then((response) => response.blob()).then(b => {
-              var url = window.URL.createObjectURL(b)
-              const audio: any = document.getElementById('voice');
-              audio.src = url;
-              audio.play();
-              LAppPal.printMessage(`Playing Text to Speech`);
-            });
-          });
-        // JSON data parsed by `data.json()` call
+        fetch(`https://${ttsregion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+          method: 'POST',
+          headers: requestHeaders,
+          body: ssml
+        }).then((response) => response.blob()).then(b => {
+          var url = window.URL.createObjectURL(b)
+          const audio: any = document.getElementById('voice');
+          audio.src = url;
+          LAppPal.printMessage(`Load Text to Speech url`);
+          if (!this.loadWavFile(url)) {
+            return;
+          }
+        });
+      });
 
-      }
-      return;
-    }
   }
 
   public getRms(): number {
