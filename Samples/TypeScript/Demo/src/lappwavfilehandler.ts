@@ -75,14 +75,15 @@ export class LAppWavFileHandler {
     }
     rms = Math.sqrt(
       rms /
-        (this._wavFileInfo._numberOfChannels *
-          (goalOffset - this._sampleOffset))
+      (this._wavFileInfo._numberOfChannels *
+        (goalOffset - this._sampleOffset))
     );
 
     this._lastRms = rms;
     this._sampleOffset = goalOffset;
     return true;
   }
+
 
   public start(filePath: string): void {
     // サンプル位参照位置を初期化
@@ -95,10 +96,63 @@ export class LAppWavFileHandler {
     if (!this.loadWavFile(filePath)) {
       LAppPal.printMessage(`start Playing ${this._wavFileInfo._fileName}`);
       if (typeof window.Audio === 'function') {
-        const audio:any = document.getElementById('voice');
-        audio.src = this._wavFileInfo._fileName;
-        audio.play();
-        LAppPal.printMessage(`Playing ${this._wavFileInfo._fileName}`);
+        const openaiurl = (document.getElementById("openaiurl") as any).value;
+        const openaipikey = (document.getElementById("openaipikey") as any).value;
+        const ttsregion = (document.getElementById("ttsregion") as any).value;
+        const ttsapikey = (document.getElementById("ttsapikey") as any).value;
+
+        const message = (document.getElementById("message") as any).value;
+        LAppPal.printMessage(message);
+
+        const m = {
+          "prompt": `##${message}\n\n`,
+          "max_tokens": 150,
+          "temperature": 0,
+          "frequency_penalty": 0,
+          "presence_penalty": 0,
+          "top_p": 1,
+          "stop": ["#", ";"]
+        }
+
+        fetch(openaiurl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-key': openaipikey,
+          },
+          body: JSON.stringify(m) // body data type must match "Content-Type" header
+        })
+          .then((response) => response.json())
+          .then(j => { //OpenAI response json
+            const answer: string = j.choices[0].text
+            LAppPal.printMessage(answer);
+            (document.getElementById("reply") as any).value = answer;
+
+            const requestHeaders: HeadersInit = new Headers();
+            requestHeaders.set('Content-Type', 'application/ssml+xml');
+            requestHeaders.set('X-Microsoft-OutputFormat', 'audio-16khz-128kbitrate-mono-mp3');
+            requestHeaders.set('Ocp-Apim-Subscription-Key', ttsapikey);
+
+            const ssml = `<speak version=\'1.0\' xml:lang=\'en-US\'>
+              <voice xml:lang=\'en-US\' xml:gender=\'Female\' name=\'en-US-JennyNeural\'>
+                  ${answer}
+              </voice>
+            </speak>`
+
+            fetch(`https://${ttsregion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+              method: 'POST',
+              headers: requestHeaders,
+              body: ssml
+            }).then((response) => response.blob()).then(b => {
+              var url = window.URL.createObjectURL(b)
+              const audio: any = document.getElementById('voice');
+              audio.src = url;
+              audio.play();
+              LAppPal.printMessage(`Playing Text to Speech`);
+            });
+          });
+        // JSON data parsed by `data.json()` call
+
       }
       return;
     }
