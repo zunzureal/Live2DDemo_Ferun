@@ -98,7 +98,6 @@ export class LAppWavFileHandler {
     const ttsregion = (document.getElementById("ttsregion") as any).value;
     const ttsapikey = (document.getElementById("ttsapikey") as any).value;
 
-
     const prompt = (document.getElementById("prompt") as any).value;
     const conversations = (document.getElementById("conversations") as any).value;
     LAppPal.printMessage(prompt);
