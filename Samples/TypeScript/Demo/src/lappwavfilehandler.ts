@@ -99,11 +99,13 @@ export class LAppWavFileHandler {
     const ttsapikey = (document.getElementById("ttsapikey") as any).value;
 
 
-    const message = (document.getElementById("message") as any).value;
-    LAppPal.printMessage(message);
+    const prompt = (document.getElementById("prompt") as any).value;
+    const conversations = (document.getElementById("conversations") as any).value;
+    LAppPal.printMessage(prompt);
 
+    const conversation = conversations + "\n\n## " + prompt
     const m = {
-      "prompt": `##${message}\n\n`,
+      "prompt": `##${conversation}\n\n`,
       "max_tokens": 150,
       "temperature": 0,
       "frequency_penalty": 0,
@@ -125,6 +127,7 @@ export class LAppWavFileHandler {
         const answer: string = j.choices[0].text
         LAppPal.printMessage(answer);
         (document.getElementById("reply") as any).value = answer;
+        (document.getElementById("conversations") as any).value = conversations + "\n\n" + answer;
 
         const requestHeaders: HeadersInit = new Headers();
         requestHeaders.set('Content-Type', 'application/ssml+xml');
