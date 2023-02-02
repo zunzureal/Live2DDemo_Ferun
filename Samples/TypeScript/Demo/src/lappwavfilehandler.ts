@@ -7,6 +7,9 @@
 
 import { LAppPal } from './lapppal';
 
+import { AzureAi } from "./azureai"
+
+
 export let s_instance: LAppWavFileHandler = null;
 
 export class LAppWavFileHandler {
@@ -93,66 +96,11 @@ export class LAppWavFileHandler {
     // RMS値をリセット
     this._lastRms = 0.0;
 
-    const openaiurl = (document.getElementById("openaiurl") as any).value;
-    const openaipikey = (document.getElementById("openaipikey") as any).value;
-    const ttsregion = (document.getElementById("ttsregion") as any).value;
-    const ttsapikey = (document.getElementById("ttsapikey") as any).value;
+    const azureAi = new AzureAi();
 
-    const prompt = (document.getElementById("prompt") as any).value;
-    const conversations = (document.getElementById("conversations") as any).value;
-    LAppPal.printMessage(prompt);
-
-    const conversation = conversations + "\n\n## " + prompt
-    const m = {
-      "prompt": `##${conversation}\n\n`,
-      "max_tokens": 150,
-      "temperature": 0,
-      "frequency_penalty": 0,
-      "presence_penalty": 0,
-      "top_p": 1,
-      "stop": ["#", ";"]
-    }
-
-    fetch(openaiurl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': openaipikey,
-      },
-      body: JSON.stringify(m) // body data type must match "Content-Type" header
-    })
-      .then((response) => response.json())
-      .then(j => { //OpenAI response json
-        const answer: string = j.choices[0].text
-        LAppPal.printMessage(answer);
-        (document.getElementById("reply") as any).value = answer;
-        (document.getElementById("conversations") as any).value = conversations + "\n\n" + answer;
-
-        const requestHeaders: HeadersInit = new Headers();
-        requestHeaders.set('Content-Type', 'application/ssml+xml');
-        requestHeaders.set('X-Microsoft-OutputFormat', 'riff-8khz-16bit-mono-pcm');
-        requestHeaders.set('Ocp-Apim-Subscription-Key', ttsapikey);
-
-        const ssml = `<speak version=\'1.0\' xml:lang=\'en-US\'>
-              <voice xml:lang=\'en-US\' xml:gender=\'Female\' name=\'en-US-JennyNeural\'>
-                  ${answer}
-              </voice>
-            </speak>`
-
-        fetch(`https://${ttsregion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
-          method: 'POST',
-          headers: requestHeaders,
-          body: ssml
-        }).then((response) => response.blob()).then(b => {
-          var url = window.URL.createObjectURL(b)
-          const audio: any = document.getElementById('voice');
-          audio.src = url;
-          LAppPal.printMessage(`Load Text to Speech url`);
-          if (!this.loadWavFile(url)) {
-            return;
-          }
-        });
-      });
+    azureAi.getOpenAiAnswer()
+      .then(ans => azureAi.getSpeechUrl(ans))
+      .then(url => this.loadWavFile(url));
 
   }
 
