@@ -2,10 +2,12 @@ import { LAppPal } from "./lapppal";
 import speechsdk from 'microsoft-cognitiveservices-speech-sdk';
 
 export class AzureAi {
-  private _openaiurl: any;
-  private _openaipikey: any;
-  private _ttsapikey: any;
-  private _ttsregion: any;
+  private _openaiurl: string;
+  private _openaipikey: string;
+  private _ttsapikey: string;
+  private _ttsregion: string;
+
+  private _inProgress: boolean;
 
   constructor() {
     this._openaiurl = (document.getElementById("openaiurl") as any).value;
@@ -13,11 +15,16 @@ export class AzureAi {
     this._ttsregion = (document.getElementById("ttsregion") as any).value;
     this._ttsapikey = (document.getElementById("ttsapikey") as any).value;
 
-
+    this._inProgress = false;
   }
 
   async getOpenAiAnswer() {
     const prompt = (document.getElementById("prompt") as any).value;
+
+    if(this._inProgress) return "";
+
+    this._inProgress = true;
+
     const conversations = (document.getElementById("conversations") as any).value;
     LAppPal.printMessage(prompt);
 
@@ -73,6 +80,7 @@ export class AzureAi {
     const audio: any = document.getElementById('voice');
     audio.src = url;
     LAppPal.printMessage(`Load Text to Speech url`);
+    this._inProgress = false;
     return url;
   }
 }

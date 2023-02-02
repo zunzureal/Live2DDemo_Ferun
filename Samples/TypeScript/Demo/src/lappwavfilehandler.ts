@@ -5,9 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { LAppPal } from './lapppal';
-
-import { AzureAi } from "./azureai"
 
 
 export let s_instance: LAppWavFileHandler = null;
@@ -95,12 +92,6 @@ export class LAppWavFileHandler {
 
     // RMS値をリセット
     this._lastRms = 0.0;
-
-    const azureAi = new AzureAi();
-
-    azureAi.getOpenAiAnswer()
-      .then(ans => azureAi.getSpeechUrl(ans))
-      .then(url => this.loadWavFile(url));
 
   }
 

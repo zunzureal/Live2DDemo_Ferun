@@ -8,6 +8,7 @@
 import { CubismMatrix44 } from '@framework/math/cubismmatrix44';
 import { ACubismMotion } from '@framework/motion/acubismmotion';
 import { csmVector } from '@framework/type/csmvector';
+import { AzureAi } from './azureai';
 
 import * as LAppDefine from './lappdefine';
 import { canvas } from './lappdelegate';
@@ -115,13 +116,22 @@ export class LAppLive2DManager {
             `[APP]hit area: [${LAppDefine.HitAreaNameBody}]`
           );
         }
-        this._models
-          .at(i)
-          .startRandomMotion(
-            LAppDefine.MotionGroupTapBody,
-            LAppDefine.PriorityNormal,
-            this._finishedMotion
-          );
+
+        const azureAi = new AzureAi();
+
+        azureAi.getOpenAiAnswer()
+          .then(ans => azureAi.getSpeechUrl(ans))
+          .then(url => {
+            this._models.at(i)._wavFileHandler.loadWavFile(url);
+            this._models
+              .at(i)
+              .startRandomMotion(
+                LAppDefine.MotionGroupTapBody,
+                LAppDefine.PriorityNormal,
+                this._finishedMotion
+              );
+          });
+
       }
     }
   }
