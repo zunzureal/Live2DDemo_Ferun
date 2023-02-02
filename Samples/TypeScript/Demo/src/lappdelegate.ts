@@ -256,6 +256,10 @@ export class LAppDelegate {
     return this._textureManager;
   }
 
+  public startConversation(data){
+    LAppLive2DManager.getInstance().startConversation(data);
+  }
+
   /**
    * コンストラクタ
    */
@@ -435,3 +439,4 @@ function onTouchCancel(e: TouchEvent): void {
 
   LAppDelegate.getInstance()._view.onTouchesEnded(posX, posY);
 }
+

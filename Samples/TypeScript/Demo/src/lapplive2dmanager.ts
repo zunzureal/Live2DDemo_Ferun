@@ -136,6 +136,29 @@ export class LAppLive2DManager {
     }
   }
 
+  public startConversation(data) {
+    for (let i = 0; i < this._models.getSize(); i++) {
+      if (LAppDefine.DebugLogEnable) {
+        LAppPal.printMessage(
+          `startConversation`
+        );
+        const azureAi = new AzureAi();
+        azureAi.getOpenAiAnswer()
+          .then(ans => azureAi.getSpeechUrl(ans))
+          .then(url => {
+            this._models.at(i)._wavFileHandler.loadWavFile(url);
+            this._models
+              .at(i)
+              .startRandomMotion(
+                LAppDefine.MotionGroupTapBody,
+                LAppDefine.PriorityNormal,
+                this._finishedMotion
+              );
+          });
+      }
+    }
+  }
+
   /**
    * 画面を更新するときの処理
    * モデルの更新処理及び描画処理を行う

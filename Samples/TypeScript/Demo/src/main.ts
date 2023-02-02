@@ -33,3 +33,7 @@ window.onresize = () => {
     LAppDelegate.getInstance().onResize();
   }
 };
+
+(window as any).startConversation = (data) => {
+  LAppDelegate.getInstance().startConversation(data);
+};
