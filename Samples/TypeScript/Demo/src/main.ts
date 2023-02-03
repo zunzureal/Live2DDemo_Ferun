@@ -34,6 +34,6 @@ window.onresize = () => {
   }
 };
 
-(window as any).startConversation = (data) => {
-  LAppDelegate.getInstance().startConversation(data);
+(window as any).startVoiceConversation = (language: string, data: Blob) => {
+  LAppDelegate.getInstance().startVoiceConversation(language, data);
 };

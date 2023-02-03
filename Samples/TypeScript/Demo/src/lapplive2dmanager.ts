@@ -136,13 +136,15 @@ export class LAppLive2DManager {
     }
   }
 
-  public startConversation(data) {
+  public startVoiceConversation(language: string, data: Blob) {
     for (let i = 0; i < this._models.getSize(); i++) {
       if (LAppDefine.DebugLogEnable) {
         LAppPal.printMessage(
           `startConversation`
         );
         const azureAi = new AzureAi();
+
+        // azureAi.getTextFromSpeech(language, data);
         azureAi.getOpenAiAnswer()
           .then(ans => azureAi.getSpeechUrl(ans))
           .then(url => {

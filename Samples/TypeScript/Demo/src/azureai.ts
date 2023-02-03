@@ -15,13 +15,15 @@ export class AzureAi {
     this._ttsregion = (document.getElementById("ttsregion") as any).value;
     this._ttsapikey = (document.getElementById("ttsapikey") as any).value;
 
+
+
     this._inProgress = false;
   }
 
   async getOpenAiAnswer() {
     const prompt = (document.getElementById("prompt") as any).value;
 
-    if(this._inProgress) return "";
+    if (this._inProgress) return "";
 
     this._inProgress = true;
 
@@ -82,5 +84,26 @@ export class AzureAi {
     LAppPal.printMessage(`Load Text to Speech url`);
     this._inProgress = false;
     return url;
+  }
+
+  async getTextFromSpeech(language: string, data: Blob) {
+
+    LAppPal.printMessage(language);
+
+    // https://westus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US
+
+
+    const requestHeaders: HeadersInit = new Headers();
+    requestHeaders.set('Accept', 'application/json;text/xml');
+    requestHeaders.set('Content-Type', 'audio/wav; codecs=audio/pcm; samplerate=16000');
+    requestHeaders.set('Ocp-Apim-Subscription-Key', this._ttsapikey);
+
+    const response = await fetch(`https://${this._ttsregion}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=${language}`, {
+      method: 'POST',
+      headers: requestHeaders,
+      body: data
+    });
+    const json = await response.json();
+    console.log(json);
   }
 }
