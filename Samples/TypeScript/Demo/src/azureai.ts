@@ -1,5 +1,8 @@
 import { LAppPal } from "./lapppal";
 import speechsdk from 'microsoft-cognitiveservices-speech-sdk';
+import { getWaveBlob } from "webm-to-wav-converter";
+import { LANGUAGE_TO_VOICE_MAPPING_LIST } from "./languagetovoicemapping";
+
 
 export class AzureAi {
   private _openaiurl: string;
@@ -20,10 +23,9 @@ export class AzureAi {
     this._inProgress = false;
   }
 
-  async getOpenAiAnswer() {
-    const prompt = (document.getElementById("prompt") as any).value;
+  async getOpenAiAnswer(prompt: string) {
 
-    if (this._inProgress) return "";
+    if (this._inProgress || prompt === "") return "";
 
     this._inProgress = true;
 
@@ -33,7 +35,7 @@ export class AzureAi {
     const conversation = conversations + "\n\n## " + prompt
     const m = {
       "prompt": `##${conversation}\n\n`,
-      "max_tokens": 150,
+      "max_tokens": 300,
       "temperature": 0,
       "frequency_penalty": 0,
       "presence_penalty": 0,
@@ -58,14 +60,16 @@ export class AzureAi {
     return answer;
   }
 
-  async getSpeechUrl(text: string) {
+  async getSpeechUrl(language: string, text: string) {
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Content-Type', 'application/ssml+xml');
     requestHeaders.set('X-Microsoft-OutputFormat', 'riff-8khz-16bit-mono-pcm');
     requestHeaders.set('Ocp-Apim-Subscription-Key', this._ttsapikey);
 
-    const ssml = `<speak version=\'1.0\' xml:lang=\'en-US\'>
-              <voice xml:lang=\'en-US\' xml:gender=\'Female\' name=\'en-US-JennyNeural\'>
+    const voice = LANGUAGE_TO_VOICE_MAPPING_LIST.find(c => c.voice.startsWith(language) && c.IsMale === false).voice;
+
+    const ssml = `<speak version=\'1.0\' xml:lang=\'${language}\'>
+              <voice xml:lang=\'${language}\' xml:gender=\'Female\' name=\'${voice}\'>
                   ${text}
               </voice>
             </speak>`
@@ -89,21 +93,19 @@ export class AzureAi {
   async getTextFromSpeech(language: string, data: Blob) {
 
     LAppPal.printMessage(language);
-
-    // https://westus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US
-
-
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept', 'application/json;text/xml');
     requestHeaders.set('Content-Type', 'audio/wav; codecs=audio/pcm; samplerate=16000');
     requestHeaders.set('Ocp-Apim-Subscription-Key', this._ttsapikey);
 
+    const wav = await getWaveBlob(data, false);
+
     const response = await fetch(`https://${this._ttsregion}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=${language}`, {
       method: 'POST',
       headers: requestHeaders,
-      body: data
+      body: wav
     });
     const json = await response.json();
-    console.log(json);
+    return json.DisplayText;
   }
 }

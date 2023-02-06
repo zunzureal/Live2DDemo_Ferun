@@ -117,10 +117,11 @@ export class LAppLive2DManager {
           );
         }
 
+        const prompt: string = (document.getElementById("prompt") as any).value;
+        const language: string = (document.getElementById("language") as any).value;
         const azureAi = new AzureAi();
-
-        azureAi.getOpenAiAnswer()
-          .then(ans => azureAi.getSpeechUrl(ans))
+        azureAi.getOpenAiAnswer(prompt)
+          .then(ans => azureAi.getSpeechUrl(language, ans))
           .then(url => {
             this._models.at(i)._wavFileHandler.loadWavFile(url);
             this._models
@@ -144,9 +145,11 @@ export class LAppLive2DManager {
         );
         const azureAi = new AzureAi();
 
-        // azureAi.getTextFromSpeech(language, data);
-        azureAi.getOpenAiAnswer()
-          .then(ans => azureAi.getSpeechUrl(ans))
+        azureAi.getTextFromSpeech(language, data)
+          .then(text => {
+            (document.getElementById("prompt") as any).value = text;
+            return azureAi.getOpenAiAnswer(text);
+          }).then(ans => azureAi.getSpeechUrl(language, ans))
           .then(url => {
             this._models.at(i)._wavFileHandler.loadWavFile(url);
             this._models

@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "microsoft-cognitiveservices-speech-sdk": "1.24.1",
+    "webm-to-wav-converter": "^1.1.0",
     "whatwg-fetch": "^3.6.2"
   }
 }
