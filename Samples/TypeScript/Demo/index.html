@@ -245,7 +245,7 @@
         if (configFileInput.prop('files').length > 0) {
           const reader = new FileReader();
           reader.addEventListener('load', () => {
-            console.log(reader.result);
+            console.log("Config loaded!");
             $("#config").val(reader.result);
           });
           reader.readAsText(configFileInput.prop('files')[0]);
