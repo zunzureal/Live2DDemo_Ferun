@@ -1,5 +1,5 @@
 
-# Live2DTutor
+# Live2D Virtual Assistant
 
 This is a sample implementation of an application that displays models output by Live2D Cubism 4 Editor from Cubism Web Samples with Azure OpenAI and Azure Text to Speech.
 
