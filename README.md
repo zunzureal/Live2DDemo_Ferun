@@ -5,6 +5,15 @@ This is a sample implementation of an application that displays models output by
 
 It is used in conjunction with the Cubism Web Framework and Live2D Cubism Core.
 
+![Live2D Azure OpenAI Chatbot Overview](Images/Live2DAzureOpenAIChatbot.png "Overview")
+
+## Demo
+English
+[![Talking with Azure OpenAI Live2D Virtual Assistant with Azure Speech Services](https://img.youtube.com/vi/z-Fl_kzrDpA/default.jpg)](https://youtu.be/z-Fl_kzrDpA)
+Cantonese
+[![廣東話互動對答Azure OpenAI 加 Azure語音服務Live2D虛擬助理示範](https://img.youtube.com/vi/0291zqM4da0/default.jpg)](https://youtu.be/0291zqM4da0)
+
+
 
 ## License
 
