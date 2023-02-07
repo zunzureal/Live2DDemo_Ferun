@@ -1,5 +1,4 @@
 import { LAppPal } from "./lapppal";
-import speechsdk from 'microsoft-cognitiveservices-speech-sdk';
 import { getWaveBlob } from "webm-to-wav-converter";
 import { LANGUAGE_TO_VOICE_MAPPING_LIST } from "./languagetovoicemapping";
 
@@ -13,19 +12,22 @@ export class AzureAi {
   private _inProgress: boolean;
 
   constructor() {
-    this._openaiurl = (document.getElementById("openaiurl") as any).value;
-    this._openaipikey = (document.getElementById("openaipikey") as any).value;
-    this._ttsregion = (document.getElementById("ttsregion") as any).value;
-    this._ttsapikey = (document.getElementById("ttsapikey") as any).value;
+    const config = (document.getElementById("config") as any).value;
 
-
+    if (config !== "") {
+      const json = JSON.parse(config);
+      this._openaiurl = json.openaiurl;
+      this._openaipikey = json.openaipikey;
+      this._ttsregion = json.ttsregion;
+      this._ttsapikey = json.ttsapikey;
+    }
 
     this._inProgress = false;
   }
 
   async getOpenAiAnswer(prompt: string) {
 
-    if (this._inProgress || prompt === "") return "";
+    if (this._openaiurl === undefined || this._inProgress || prompt === "") return "";
 
     this._inProgress = true;
 
@@ -61,6 +63,9 @@ export class AzureAi {
   }
 
   async getSpeechUrl(language: string, text: string) {
+
+    if (this._ttsregion === undefined) return;
+
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Content-Type', 'application/ssml+xml');
     requestHeaders.set('X-Microsoft-OutputFormat', 'riff-8khz-16bit-mono-pcm');
@@ -68,11 +73,12 @@ export class AzureAi {
 
     const voice = LANGUAGE_TO_VOICE_MAPPING_LIST.find(c => c.voice.startsWith(language) && c.IsMale === false).voice;
 
-    const ssml = `<speak version=\'1.0\' xml:lang=\'${language}\'>
-              <voice xml:lang=\'${language}\' xml:gender=\'Female\' name=\'${voice}\'>
-                  ${text}
-              </voice>
-            </speak>`
+    const ssml = `
+<speak version=\'1.0\' xml:lang=\'${language}\'>
+  <voice xml:lang=\'${language}\' xml:gender=\'Female\' name=\'${voice}\'>
+    ${text}
+  </voice>
+</speak>`;
 
     const response = await fetch(`https://${this._ttsregion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
       method: 'POST',
@@ -91,6 +97,7 @@ export class AzureAi {
   }
 
   async getTextFromSpeech(language: string, data: Blob) {
+    if (this._ttsregion === undefined) return "";
 
     LAppPal.printMessage(language);
     const requestHeaders: HeadersInit = new Headers();
