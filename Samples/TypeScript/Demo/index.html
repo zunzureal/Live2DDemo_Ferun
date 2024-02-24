@@ -5,11 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=1900">
   <title>Azure Open AI Virtual Assistant</title>
+  <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.0.1/dist/tailwind.min.css">
   <style>
     html,
     body {
       margin: 0;
       overflow: hidden;
+      background: #F3F4F6;
     }
 
     #labelDiv {
@@ -37,6 +39,9 @@
       outline: none;
     }
 
+    .ask-button {
+    }
+
     .notRec {
       background-color: darkred;
     }
@@ -46,6 +51,23 @@
       animation-duration: 1.5s;
       animation-iteration-count: infinite;
       animation-timing-function: linear;
+    }
+
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      border-radius: 50%;
+
+      width: 100%;
+      aspect-ratio: 1 / 1;
+    }
+    #canvas-container canvas {
+      height: 100%;
+      margin: 0 auto;
+      transform: scale(1.25) translateY(4%);
     }
 
     @keyframes pulse {
@@ -68,229 +90,328 @@
   <script src="Core/live2dcubismcore.js"></script>
   <!-- Build script -->
   <script src="./dist/bundle.js"></script>
-
-  <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-
 </head>
 
 <body>
-  <input type="hidden" id="config">
-  <input type="hidden" id="conversations">
-  <div id="labelDiv">.
-    <div class="row">
-      <div class="column">
-        <label for="configFileInput">Config File (<a href="config.json" target="_blank">Sample</a>):</label>
-        <input type="file" id="configFileInput"><br />
-        <label for="prompt">Prompt:</label><br>
-        <textarea id="prompt" name="prompt" rows="8" cols="50"></textarea><br>
+  <div class="flex h-screen w-full justify-center items-center px-4">
+    <div class="grid grid-cols-2 bg-purple-50 gap-x-4 px-4 py-8 rounded-md border-2 border-purple-700 max-w-screen-2xl">
+      <div class="col-span-1">
+        <div id="canvas-container" class="border-4 border-purple-700 shadow-md"></div>
       </div>
-      <div class="column">
-        <label for="language">Language</label>
-        <select name="language" id="language">
-          <option value='af-ZA'>Afrikaans (South Africa)</option>
-          <option value='am-ET'>Amharic (Ethiopia)</option>
-          <option value='ar-AE'>Arabic (United Arab Emirates)</option>
-          <option value='ar-BH'>Arabic (Bahrain)</option>
-          <option value='ar-DZ'>Arabic (Algeria)</option>
-          <option value='ar-EG'>Arabic (Egypt)</option>
-          <option value='ar-IL'>Arabic (Israel)</option>
-          <option value='ar-IQ'>Arabic (Iraq)</option>
-          <option value='ar-JO'>Arabic (Jordan)</option>
-          <option value='ar-KW'>Arabic (Kuwait)</option>
-          <option value='ar-LB'>Arabic (Lebanon)</option>
-          <option value='ar-LY'>Arabic (Libya)</option>
-          <option value='ar-MA'>Arabic (Morocco)</option>
-          <option value='ar-OM'>Arabic (Oman)</option>
-          <option value='ar-PS'>Arabic (Palestinian Territories)</option>
-          <option value='ar-QA'>Arabic (Qatar)</option>
-          <option value='ar-SA'>Arabic (Saudi Arabia)</option>
-          <option value='ar-SY'>Arabic (Syria)</option>
-          <option value='ar-TN'>Arabic (Tunisia)</option>
-          <option value='ar-YE'>Arabic (Yemen)</option>
-          <option value='az-AZ'>Azerbaijani (Latin, Azerbaijan)</option>
-          <option value='bg-BG'>Bulgarian (Bulgaria)</option>
-          <option value='bn-IN'>Bengali (India)</option>
-          <option value='bs-BA'>Bosnian (Bosnia and Herzegovina)</option>
-          <option value='ca-ES'>Catalan (Spain)</option>
-          <option value='cs-CZ'>Czech (Czechia)</option>
-          <option value='cy-GB'>Welsh (United Kingdom)</option>
-          <option value='da-DK'>Danish (Denmark)</option>
-          <option value='de-AT'>German (Austria)</option>
-          <option value='de-CH'>German (Switzerland)</option>
-          <option value='de-DE'>German (Germany)</option>
-          <option value='el-GR'>Greek (Greece)</option>
-          <option value='en-AU'>English (Australia)</option>
-          <option value='en-CA'>English (Canada)</option>
-          <option value='en-GB'>English (United Kingdom)</option>
-          <option value='en-GH'>English (Ghana)</option>
-          <option value='en-HK'>English (Hong Kong SAR)</option>
-          <option value='en-IE'>English (Ireland)</option>
-          <option value='en-IN'>English (India)</option>
-          <option value='en-KE'>English (Kenya)</option>
-          <option value='en-NG'>English (Nigeria)</option>
-          <option value='en-NZ'>English (New Zealand)</option>
-          <option value='en-PH'>English (Philippines)</option>
-          <option value='en-SG'>English (Singapore)</option>
-          <option value='en-TZ'>English (Tanzania)</option>
-          <option value='en-US'>English (United States)</option>
-          <option value='en-ZA'>English (South Africa)</option>
-          <option value='es-AR'>Spanish (Argentina)</option>
-          <option value='es-BO'>Spanish (Bolivia)</option>
-          <option value='es-CL'>Spanish (Chile)</option>
-          <option value='es-CO'>Spanish (Colombia)</option>
-          <option value='es-CR'>Spanish (Costa Rica)</option>
-          <option value='es-CU'>Spanish (Cuba)</option>
-          <option value='es-DO'>Spanish (Dominican Republic)</option>
-          <option value='es-EC'>Spanish (Ecuador)</option>
-          <option value='es-ES'>Spanish (Spain)</option>
-          <option value='es-GQ'>Spanish (Equatorial Guinea)</option>
-          <option value='es-GT'>Spanish (Guatemala)</option>
-          <option value='es-HN'>Spanish (Honduras)</option>
-          <option value='es-MX'>Spanish (Mexico)</option>
-          <option value='es-NI'>Spanish (Nicaragua)</option>
-          <option value='es-PA'>Spanish (Panama)</option>
-          <option value='es-PE'>Spanish (Peru)</option>
-          <option value='es-PR'>Spanish (Puerto Rico)</option>
-          <option value='es-PY'>Spanish (Paraguay)</option>
-          <option value='es-SV'>Spanish (El Salvador)</option>
-          <option value='es-US'>Spanish (United States)</option>
-          <option value='es-UY'>Spanish (Uruguay)</option>
-          <option value='es-VE'>Spanish (Venezuela)</option>
-          <option value='et-EE'>Estonian (Estonia)</option>
-          <option value='eu-ES'>Basque</option>
-          <option value='fa-IR'>Persian (Iran)</option>
-          <option value='fi-FI'>Finnish (Finland)</option>
-          <option value='fil-PH'>Filipino (Philippines)</option>
-          <option value='fr-BE'>French (Belgium)</option>
-          <option value='fr-CA'>French (Canada)</option>
-          <option value='fr-CH'>French (Switzerland)</option>
-          <option value='fr-FR'>French (France)</option>
-          <option value='ga-IE'>Irish (Ireland)</option>
-          <option value='gl-ES'>Galician</option>
-          <option value='gu-IN'>Gujarati (India)</option>
-          <option value='he-IL'>Hebrew (Israel)</option>
-          <option value='hi-IN'>Hindi (India)</option>
-          <option value='hr-HR'>Croatian (Croatia)</option>
-          <option value='hu-HU'>Hungarian (Hungary)</option>
-          <option value='hy-AM'>Armenian (Armenia)</option>
-          <option value='id-ID'>Indonesian (Indonesia)</option>
-          <option value='is-IS'>Icelandic (Iceland)</option>
-          <option value='it-CH'>Italian (Switzerland)</option>
-          <option value='it-IT'>Italian (Italy)</option>
-          <option value='ja-JP'>Japanese (Japan)</option>
-          <option value='jv-ID'>Javanese (Latin, Indonesia)</option>
-          <option value='ka-GE'>Georgian (Georgia)</option>
-          <option value='kk-KZ'>Kazakh (Kazakhstan)</option>
-          <option value='km-KH'>Khmer (Cambodia)</option>
-          <option value='kn-IN'>Kannada (India)</option>
-          <option value='ko-KR'>Korean (Korea)</option>
-          <option value='lo-LA'>Lao (Laos)</option>
-          <option value='lt-LT'>Lithuanian (Lithuania)</option>
-          <option value='lv-LV'>Latvian (Latvia)</option>
-          <option value='mk-MK'>Macedonian (North Macedonia)</option>
-          <option value='ml-IN'>Malayalam (India)</option>
-          <option value='mn-MN'>Mongolian (Mongolia)</option>
-          <option value='mr-IN'>Marathi (India)</option>
-          <option value='ms-MY'>Malay (Malaysia)</option>
-          <option value='mt-MT'>Maltese (Malta)</option>
-          <option value='my-MM'>Burmese (Myanmar)</option>
-          <option value='nb-NO'>Norwegian (Bokmål, Norway)</option>
-          <option value='ne-NP'>Nepali (Nepal)</option>
-          <option value='nl-BE'>Dutch (Belgium)</option>
-          <option value='nl-NL'>Dutch (Netherlands)</option>
-          <option value='pl-PL'>Polish (Poland)</option>
-          <option value='ps-AF'>Pashto (Afghanistan)</option>
-          <option value='pt-BR'>Portuguese (Brazil)</option>
-          <option value='pt-PT'>Portuguese (Portugal)</option>
-          <option value='ro-RO'>Romanian (Romania)</option>
-          <option value='ru-RU'>Russian (Russia)</option>
-          <option value='si-LK'>Sinhala (Sri Lanka)</option>
-          <option value='sk-SK'>Slovak (Slovakia)</option>
-          <option value='sl-SI'>Slovenian (Slovenia)</option>
-          <option value='so-SO'>Somali (Somalia)</option>
-          <option value='sq-AL'>Albanian (Albania)</option>
-          <option value='sr-RS'>Serbian (Cyrillic, Serbia)</option>
-          <option value='sv-SE'>Swedish (Sweden)</option>
-          <option value='sw-KE'>Swahili (Kenya)</option>
-          <option value='sw-TZ'>Swahili (Tanzania)</option>
-          <option value='ta-IN'>Tamil (India)</option>
-          <option value='te-IN'>Telugu (India)</option>
-          <option value='th-TH'>Thai (Thailand)</option>
-          <option value='tr-TR'>Turkish (Turkey)</option>
-          <option value='uk-UA'>Ukrainian (Ukraine)</option>
-          <option value='uz-UZ'>Uzbek (Latin, Uzbekistan)</option>
-          <option value='vi-VN'>Vietnamese (Vietnam)</option>
-          <option value='wuu-CN'>Chinese (Wu, Simplified)</option>
-          <option value='yue-CN'>Chinese (Cantonese, Simplified)</option>
-          <option value='zh-CN'>Chinese (Mandarin, Simplified)</option>
-          <option value='zh-CN-sichuan'>Chinese (Southwestern Mandarin, Simplified)</option>
-          <option value='zh-HK' selected="selected">Chinese (Cantonese, Traditional)</option>
-          <option value='zh-TW'>Chinese (Taiwanese Mandarin, Traditional)</option>
-          <option value='zu-ZA'>Zulu (South Africa)</option>
-        </select>
-        <button id="recButton" class="recrodingButton"></button>
-        <br />
-        <label for="reply">Reply</label><br />
-        <textarea id="reply" name="reply" rows="8" cols="50" readonly>
-        </textarea>
+
+      <div class="col-span-1 pl-8">
+        <div class="p-4">
+          <div class="">
+            <button id="upload-config-btn" class="bg-purple-600 rounded-md px-4 py-1 text-white">Upload config</button>
+            <input type="file" id="configFileInput" class="hidden">
+
+            <div class="inline-block ml-2">
+              <label for="language">Language:</label>
+              <select name="language" id="language" class="border border-black bg-purple-200 px-4 py-1 rounded-md">
+                <option value='af-ZA'>Afrikaans (South Africa)</option>
+                <option value='am-ET'>Amharic (Ethiopia)</option>
+                <option value='ar-AE'>Arabic (United Arab Emirates)</option>
+                <option value='ar-BH'>Arabic (Bahrain)</option>
+                <option value='ar-DZ'>Arabic (Algeria)</option>
+                <option value='ar-EG'>Arabic (Egypt)</option>
+                <option value='ar-IL'>Arabic (Israel)</option>
+                <option value='ar-IQ'>Arabic (Iraq)</option>
+                <option value='ar-JO'>Arabic (Jordan)</option>
+                <option value='ar-KW'>Arabic (Kuwait)</option>
+                <option value='ar-LB'>Arabic (Lebanon)</option>
+                <option value='ar-LY'>Arabic (Libya)</option>
+                <option value='ar-MA'>Arabic (Morocco)</option>
+                <option value='ar-OM'>Arabic (Oman)</option>
+                <option value='ar-PS'>Arabic (Palestinian Territories)</option>
+                <option value='ar-QA'>Arabic (Qatar)</option>
+                <option value='ar-SA'>Arabic (Saudi Arabia)</option>
+                <option value='ar-SY'>Arabic (Syria)</option>
+                <option value='ar-TN'>Arabic (Tunisia)</option>
+                <option value='ar-YE'>Arabic (Yemen)</option>
+                <option value='az-AZ'>Azerbaijani (Latin, Azerbaijan)</option>
+                <option value='bg-BG'>Bulgarian (Bulgaria)</option>
+                <option value='bn-IN'>Bengali (India)</option>
+                <option value='bs-BA'>Bosnian (Bosnia and Herzegovina)</option>
+                <option value='ca-ES'>Catalan (Spain)</option>
+                <option value='cs-CZ'>Czech (Czechia)</option>
+                <option value='cy-GB'>Welsh (United Kingdom)</option>
+                <option value='da-DK'>Danish (Denmark)</option>
+                <option value='de-AT'>German (Austria)</option>
+                <option value='de-CH'>German (Switzerland)</option>
+                <option value='de-DE'>German (Germany)</option>
+                <option value='el-GR'>Greek (Greece)</option>
+                <option value='en-AU'>English (Australia)</option>
+                <option value='en-CA'>English (Canada)</option>
+                <option value='en-GB'>English (United Kingdom)</option>
+                <option value='en-GH'>English (Ghana)</option>
+                <option value='en-HK'>English (Hong Kong SAR)</option>
+                <option value='en-IE'>English (Ireland)</option>
+                <option value='en-IN'>English (India)</option>
+                <option value='en-KE'>English (Kenya)</option>
+                <option value='en-NG'>English (Nigeria)</option>
+                <option value='en-NZ'>English (New Zealand)</option>
+                <option value='en-PH'>English (Philippines)</option>
+                <option value='en-SG'>English (Singapore)</option>
+                <option value='en-TZ'>English (Tanzania)</option>
+                <option value='en-US'>English (United States)</option>
+                <option value='en-ZA'>English (South Africa)</option>
+                <option value='es-AR'>Spanish (Argentina)</option>
+                <option value='es-BO'>Spanish (Bolivia)</option>
+                <option value='es-CL'>Spanish (Chile)</option>
+                <option value='es-CO'>Spanish (Colombia)</option>
+                <option value='es-CR'>Spanish (Costa Rica)</option>
+                <option value='es-CU'>Spanish (Cuba)</option>
+                <option value='es-DO'>Spanish (Dominican Republic)</option>
+                <option value='es-EC'>Spanish (Ecuador)</option>
+                <option value='es-ES'>Spanish (Spain)</option>
+                <option value='es-GQ'>Spanish (Equatorial Guinea)</option>
+                <option value='es-GT'>Spanish (Guatemala)</option>
+                <option value='es-HN'>Spanish (Honduras)</option>
+                <option value='es-MX'>Spanish (Mexico)</option>
+                <option value='es-NI'>Spanish (Nicaragua)</option>
+                <option value='es-PA'>Spanish (Panama)</option>
+                <option value='es-PE'>Spanish (Peru)</option>
+                <option value='es-PR'>Spanish (Puerto Rico)</option>
+                <option value='es-PY'>Spanish (Paraguay)</option>
+                <option value='es-SV'>Spanish (El Salvador)</option>
+                <option value='es-US'>Spanish (United States)</option>
+                <option value='es-UY'>Spanish (Uruguay)</option>
+                <option value='es-VE'>Spanish (Venezuela)</option>
+                <option value='et-EE'>Estonian (Estonia)</option>
+                <option value='eu-ES'>Basque</option>
+                <option value='fa-IR'>Persian (Iran)</option>
+                <option value='fi-FI'>Finnish (Finland)</option>
+                <option value='fil-PH'>Filipino (Philippines)</option>
+                <option value='fr-BE'>French (Belgium)</option>
+                <option value='fr-CA'>French (Canada)</option>
+                <option value='fr-CH'>French (Switzerland)</option>
+                <option value='fr-FR'>French (France)</option>
+                <option value='ga-IE'>Irish (Ireland)</option>
+                <option value='gl-ES'>Galician</option>
+                <option value='gu-IN'>Gujarati (India)</option>
+                <option value='he-IL'>Hebrew (Israel)</option>
+                <option value='hi-IN'>Hindi (India)</option>
+                <option value='hr-HR'>Croatian (Croatia)</option>
+                <option value='hu-HU'>Hungarian (Hungary)</option>
+                <option value='hy-AM'>Armenian (Armenia)</option>
+                <option value='id-ID'>Indonesian (Indonesia)</option>
+                <option value='is-IS'>Icelandic (Iceland)</option>
+                <option value='it-CH'>Italian (Switzerland)</option>
+                <option value='it-IT'>Italian (Italy)</option>
+                <option value='ja-JP-MayuNeural' selected="selected">Japanese (Japan)</option>
+                <option value='jv-ID'>Javanese (Latin, Indonesia)</option>
+                <option value='ka-GE'>Georgian (Georgia)</option>
+                <option value='kk-KZ'>Kazakh (Kazakhstan)</option>
+                <option value='km-KH'>Khmer (Cambodia)</option>
+                <option value='kn-IN'>Kannada (India)</option>
+                <option value='ko-KR'>Korean (Korea)</option>
+                <option value='lo-LA'>Lao (Laos)</option>
+                <option value='lt-LT'>Lithuanian (Lithuania)</option>
+                <option value='lv-LV'>Latvian (Latvia)</option>
+                <option value='mk-MK'>Macedonian (North Macedonia)</option>
+                <option value='ml-IN'>Malayalam (India)</option>
+                <option value='mn-MN'>Mongolian (Mongolia)</option>
+                <option value='mr-IN'>Marathi (India)</option>
+                <option value='ms-MY'>Malay (Malaysia)</option>
+                <option value='mt-MT'>Maltese (Malta)</option>
+                <option value='my-MM'>Burmese (Myanmar)</option>
+                <option value='nb-NO'>Norwegian (Bokmål, Norway)</option>
+                <option value='ne-NP'>Nepali (Nepal)</option>
+                <option value='nl-BE'>Dutch (Belgium)</option>
+                <option value='nl-NL'>Dutch (Netherlands)</option>
+                <option value='pl-PL'>Polish (Poland)</option>
+                <option value='ps-AF'>Pashto (Afghanistan)</option>
+                <option value='pt-BR'>Portuguese (Brazil)</option>
+                <option value='pt-PT'>Portuguese (Portugal)</option>
+                <option value='ro-RO'>Romanian (Romania)</option>
+                <option value='ru-RU'>Russian (Russia)</option>
+                <option value='si-LK'>Sinhala (Sri Lanka)</option>
+                <option value='sk-SK'>Slovak (Slovakia)</option>
+                <option value='sl-SI'>Slovenian (Slovenia)</option>
+                <option value='so-SO'>Somali (Somalia)</option>
+                <option value='sq-AL'>Albanian (Albania)</option>
+                <option value='sr-RS'>Serbian (Cyrillic, Serbia)</option>
+                <option value='sv-SE'>Swedish (Sweden)</option>
+                <option value='sw-KE'>Swahili (Kenya)</option>
+                <option value='sw-TZ'>Swahili (Tanzania)</option>
+                <option value='ta-IN'>Tamil (India)</option>
+                <option value='te-IN'>Telugu (India)</option>
+                <option value='th-TH-PremwadeeNeural'>Thai (Thailand)</option>
+                <option value='tr-TR'>Turkish (Turkey)</option>
+                <option value='uk-UA'>Ukrainian (Ukraine)</option>
+                <option value='uz-UZ'>Uzbek (Latin, Uzbekistan)</option>
+                <option value='vi-VN'>Vietnamese (Vietnam)</option>
+                <option value='wuu-CN'>Chinese (Wu, Simplified)</option>
+                <option value='yue-CN'>Chinese (Cantonese, Simplified)</option>
+                <option value='zh-CN'>Chinese (Mandarin, Simplified)</option>
+                <option value='zh-CN-sichuan'>Chinese (Southwestern Mandarin, Simplified)</option>
+                <option value='zh-HK'>Chinese (Cantonese, Traditional)</option>
+                <option value='zh-TW'>Chinese (Taiwanese Mandarin, Traditional)</option>
+                <option value='zu-ZA'>Zulu (South Africa)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div id="chatlog" class="p-2 border border-purple-700 bg-purple-100 rounded-md h-96 overflow-auto"></div>
+            <p id="status-text" class="text-gray-500 text-sm my-2"></p>
+          </div>
+
+          <div class="mt-4">
+            <label for="prompt">Prompt:</label>
+            <div class="w-full flex gap-x-2">
+              <input id="prompt" type="text" class="px-2 py-1 rounded-md border border-black flex-grow"/>
+              <button id="askButton" class="ask-button disabled:bg-purple-200 hover:bg-purple-700 active:bg-purple-900 text-white px-4 py-1 rounded-md">Ask Fern</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="labelDiv">
+          <div class="hidden">
+            <div class="column">
+              <!-- <button id="recButton" class="recrodingButton"></button> -->
+              <br />
+              <label for="reply">Reply</label><br />
+              <textarea id="reply" name="reply" rows="8" cols="50" readonly>
+                  </textarea>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+
+  <input type="hidden" id="config">
+  <input type="hidden" id="conversations">
   <audio id="voice" />
   <script>
-    $(document).ready(() => {
-      const configFileInput = $("#configFileInput");
-      configFileInput.change(() => {
-        if (configFileInput.prop('files').length > 0) {
-          const reader = new FileReader();
-          reader.addEventListener('load', () => {
-            console.log("Config loaded!");
-            $("#config").val(reader.result);
-          });
-          reader.readAsText(configFileInput.prop('files')[0]);
+    // Document ready
+    const chatlog = [
+      // { message: 'Hello', type: 'prompt', role: 'user', displayName: 'User' },
+      // { message: 'Hi there! How can I help you today?', type: 'reply', role: 'assistant', displayName: 'Fren'},
+    ]
+
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOMContentLoaded')
+
+      loadConfig()
+
+      // Load the config file
+      function loadConfig() {
+        // Load config button
+        const uploadConfigBtn = document.getElementById("upload-config-btn")
+        uploadConfigBtn.addEventListener('click', () => {
+          configFileInput.click()
+        })
+
+        // Config file input
+        const configFileInput = document.getElementById("configFileInput")
+        configFileInput.addEventListener('change', () => {
+          if (configFileInput.files.length > 0) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+              console.log("Config loaded!");
+              document.getElementById("config").value = reader.result
+
+              uploadConfigBtn.innerText = `Loaded: ${configFileInput.files[0].name}`
+            })
+            reader.readAsText(configFileInput.files[0])
+          }
+          this.value = null
+        })
+
+      }
+
+      // Start voice conversation
+      const selectedLanguage = document.getElementById("language")
+      const askButton = document.getElementById("askButton")
+      const prompt = document.getElementById("prompt")
+      const status = document.getElementById("status-text")
+
+      askButton.addEventListener('click', () => {
+        sendMessage()
+      })
+
+      // When enter
+      prompt.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage()
         }
-        this.value = null;
-      });
+      })
 
-      const options = { mimeType: 'audio/webm;' };
-      let recordedChunks = [];
-      let mediaRecorder;
+      // Send message
+      async function sendMessage() {
+        addToChatlog(prompt.value, 'ask', 'user', 'User')
+        status.innerText = 'Fren is typing...'
+        const promptText = prompt.value
+        prompt.value = ''
 
-      const handleSuccess = stream => {
-        mediaRecorder = new MediaRecorder(stream, options);
-        mediaRecorder.addEventListener('dataavailable', e => {
-          if (e.data.size > 0) recordedChunks.push(e.data);
-        });
-        mediaRecorder.addEventListener('stop', () => {
-          startVoiceConversation($("#language").val(),
-            new Blob(recordedChunks, { type: 'audio/webm' }));
-        });
-        mediaRecorder.start();
-      };
+        // Start voice conversation
+        const result = await startVoiceConversation(selectedLanguage.value, promptText, chatlog, new Blob([], { type: 'audio/webm' }));
+        status.innerText = ''
+        addToChatlog(result, 'reply', 'assistant', 'Fren')
+      }
 
-      $('#recButton').addClass("notRec");
-      $('#recButton').click(() => {
-        startVoiceConversation($("#language").val(),
-          new Blob([], { type: 'audio/webm' }));
+      function addToChatlog(message, type, role, displayName) {
+        chatlog.push({ message, type, role, displayName })
+        updateChatlog()
+      }
 
-        if ($('#recButton').hasClass('notRec')) {
-          $('#recButton').removeClass("notRec");
-          $('#recButton').addClass("Rec");
-          navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-            .then(handleSuccess);
-
+      // Prompt input validation
+      function validatePrompt() {
+        if (prompt.value.length > 0) {
+          askButton.disabled = false
+          askButton.classList.add('bg-purple-500')
+          askButton.classList.remove('bg-purple-200')
+        } else {
+          askButton.disabled = true
+          askButton.classList.add('bg-purple-200')
+          askButton.classList.remove('bg-purple-500')
         }
-        else {
-          $('#recButton').removeClass("Rec");
-          $('#recButton').addClass("notRec");
-          console.log(mediaRecorder)
-          // mediaRecorder.stop();
-          recordedChunks = [];
-        }
-      });
-    });
+      }
 
+      // On prompt input change
+      prompt.addEventListener('input', () => {
+        validatePrompt()
+      })
+
+      // Update chatlog
+      const chatlogDiv = document.getElementById("chatlog")
+
+      function updateChatlog() {
+        chatlogDiv.innerHTML = ''
+
+        chatlog.forEach((log) => {
+          const div = document.createElement('div')
+          div.classList.add('py-2')
+          if (log.role === 'user') {
+            div.classList.add('text-right')
+          }
+
+          const user = document.createElement('p')
+          user.innerText = log.displayName
+          user.classList.add('text-xs', 'font-bold', 'text-purple-700', 'mb-1')
+
+          const message = document.createElement('p')
+          message.innerText = log.message
+          message.classList.add('p-2', 'bg-white', 'border', 'border-black', 'rounded-md', 'inline-block')
+          if (log.role === 'user') {
+            message.classList.add('bg-purple-200')
+          }
+
+          div.appendChild(user)
+          div.appendChild(message)
+          chatlogDiv.appendChild(div)
+
+          // Scroll to bottom
+          chatlogDiv.scrollTop = chatlogDiv.scrollHeight
+        })
+      }
+
+      validatePrompt()
+      updateChatlog()
+    })
 
   </script>
 </body>

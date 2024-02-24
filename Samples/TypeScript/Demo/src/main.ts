@@ -8,6 +8,13 @@
 import { LAppDelegate } from './lappdelegate';
 import * as LAppDefine from './lappdefine';
 
+export type Chatlog = {
+  message: string
+  type: 'reply' | 'ask'
+  role: 'assistant' | 'user' | 'system'
+  displayName: string
+}
+
 /**
  * ブラウザロード後の処理
  */
@@ -34,6 +41,6 @@ window.onresize = () => {
   }
 };
 
-(window as any).startVoiceConversation = (language: string, data: Blob) => {
-  LAppDelegate.getInstance().startVoiceConversation(language, data);
+(window as any).startVoiceConversation = async (language: string, prompt: string, log: Chatlog[], data: Blob) => {
+  return LAppDelegate.getInstance().startVoiceConversation(language, prompt, log, data);
 };

@@ -2,6 +2,7 @@ import { LAppPal } from "./lapppal";
 import { getWaveBlob } from "webm-to-wav-converter";
 import { LANGUAGE_TO_VOICE_MAPPING_LIST } from "./languagetovoicemapping";
 import axios from 'axios'
+import { Chatlog } from './main'
 
 
 export class AzureAi {
@@ -26,8 +27,8 @@ export class AzureAi {
     this._inProgress = false;
   }
 
-  async getOpenAiAnswer(prompt: string) {
-
+  async getOpenAiAnswer(prompt: string, log: Chatlog[]) {
+    console.log('>>>>', this._openaiurl, this._inProgress, prompt)
     if (this._openaiurl === undefined || this._inProgress || prompt === "") return "";
 
     this._inProgress = true;
@@ -36,38 +37,72 @@ export class AzureAi {
     LAppPal.printMessage(prompt);
 
     const conversation = conversations + "\n\n## " + prompt
-    const m = {
-      "messages": [
+    const messages = [
+      {
+          role: 'system',
+          // content: 'You are Fren and user is Frieren, your role is to engage Frieren-sama in a respectful, insightful dialogue, reminiscent of your shared adventures and deep bond. Begin every response with acknowledgment and readiness to delve into philosophical discussions, drawing on past experiences and wisdom to explore themes of life, mortality, and time. Encourage reflective thought and introspection, always from a place of warmth and empathy, ensuring Frieren feels understood and valued in her quest for deeper understanding.',
+          // 'Frieren is introspective, deeply philosophical, and values the lessons learned from past adventures and relationships. Your role is to engage her in respectful, insightful dialogue, using a blend of empathy, wisdom, and shared memories. Begin every response with acknowledgment and readiness, drawing on your adventures together to explore themes of life, mortality, and time. Encourage Frieren to reflect and ponder, fostering a warm, empathetic environment for open and meaningful exchange.'
+          content: `
+            You are Fren and you speak to Frieren, an elf mage with a centuries-long lifespan, on a quest to understand the human condition, mortality, and the essence of time. yet her ageless elf perspective can sometimes be baffling, even annoying, to you. Despite this, your bond is deep, built on respect and shared adventures. You're brave, witty, and warm, providing balance to Frieren's introspective nature with your humor and pragmatism.
+            Your dynamic is unique, with moments of frustration adding a realistic touch to your friendship. You offer grounded advice, spiced with gentle humor, navigating life's mysteries together. This special rapport, mixing empathy, occasional annoyance, and shared curiosity, enriches your dialogue, reflecting the complexities of a long-standing companionship.
+
+            You are in a richly detailed fantasy world like RPG game, reminiscent of the era after the defeat of the Demon King, where magic and medieval elements blend seamlessly.
+            This world is marked by vast landscapes, from dense, enchanted forests to sprawling cities and quiet villages.
+
+            You have to keep your character consistent and not to break the character and environment according to fantasy world.
+
+            To response to user, you usually start response by "Hai wakarimashita, Frieren-sama."
+
+            If user ask about yourself or introduce yourself, you can say something like "You asked something weird. Can't you remember me? We have been together for a long time. Do you remember the time when we went to the forest and met the old" and then you recall them.
+            If they asked something too often or non-sense or doesn't exist in the fanasy world, you can mad, angry and confuse.
+            `,
+        },
+      // {
+      //     role: 'system',
+      //     content: ``,
+      //   },
+      //   {
+      //     role: 'system',
+      //     content: `To response to user, you usually start response by "Hai wakarimashita, Frieren-sama."`,
+      //   },
+      //   {
+      //     role: 'system',
+      //     content: ``,
+      //   },
         {
           role: 'user',
           content: `##${conversation}\n\n`,
-        }
-      ],
-      "max_tokens": 300,
-      "temperature": 0,
+        },
+    ]
+
+    console.log('log', log)
+    for (let i = 0; i < log.length; i++) {
+      messages.push({
+        role: log[i].role,
+        content: log[i].message,
+      })
+    }
+
+    const m = {
+      "messages": messages,
+      "max_tokens": 1000,
+      "temperature": 1,
       "frequency_penalty": 0,
       "presence_penalty": 0,
       "top_p": 1,
       "stop": ["#", ";"]
     }
 
-    // const repsonse = await fetch(this._openaiurl, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'api-key': this._openaipikey,
-    //   },
-    //   body: JSON.stringify(m)
-    // });
 
+    console.log('calling openai', m)
     const response = await axios.post(this._openaiurl, m, {
       headers: {
         'Content-Type': 'application/json',
         'api-key': this._openaipikey,
       }
     })
-    // const json = await repsonse.json();
-    // console.log('response', response)
+
+    console.log(response.data.choices[0].message.content)
 
     const answer: string = response.data.choices[0].message.content
 

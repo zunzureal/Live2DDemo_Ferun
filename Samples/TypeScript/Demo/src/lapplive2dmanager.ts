@@ -14,6 +14,7 @@ import * as LAppDefine from './lappdefine';
 import { canvas } from './lappdelegate';
 import { LAppModel } from './lappmodel';
 import { LAppPal } from './lapppal';
+import { Chatlog } from './main'
 
 export let s_instance: LAppLive2DManager = null;
 
@@ -95,85 +96,72 @@ export class LAppLive2DManager {
    * @param x 画面のX座標
    * @param y 画面のY座標
    */
-  public onTap(x: number, y: number): void {
-    if (LAppDefine.DebugLogEnable) {
-      LAppPal.printMessage(
-        `[APP]tap point: {x: ${x.toFixed(2)} y: ${y.toFixed(2)}}`
-      );
-    }
+  // public onTap(x: number, y: number): void {
+  //   if (LAppDefine.DebugLogEnable) {
+  //     LAppPal.printMessage(
+  //       `[APP]tap point: {x: ${x.toFixed(2)} y: ${y.toFixed(2)}}`
+  //     );
+  //   }
 
-    for (let i = 0; i < this._models.getSize(); i++) {
-      if (this._models.at(i).hitTest(LAppDefine.HitAreaNameHead, x, y)) {
-        if (LAppDefine.DebugLogEnable) {
-          LAppPal.printMessage(
-            `[APP]hit area: [${LAppDefine.HitAreaNameHead}]`
-          );
-        }
-        this._models.at(i).setRandomExpression();
-      } else if (this._models.at(i).hitTest(LAppDefine.HitAreaNameBody, x, y)) {
-        if (LAppDefine.DebugLogEnable) {
-          LAppPal.printMessage(
-            `[APP]hit area: [${LAppDefine.HitAreaNameBody}]`
-          );
-        }
+  //   for (let i = 0; i < this._models.getSize(); i++) {
+  //     if (this._models.at(i).hitTest(LAppDefine.HitAreaNameHead, x, y)) {
+  //       if (LAppDefine.DebugLogEnable) {
+  //         LAppPal.printMessage(
+  //           `[APP]hit area: [${LAppDefine.HitAreaNameHead}]`
+  //         );
+  //       }
+  //       this._models.at(i).setRandomExpression();
+  //     } else if (this._models.at(i).hitTest(LAppDefine.HitAreaNameBody, x, y)) {
+  //       if (LAppDefine.DebugLogEnable) {
+  //         LAppPal.printMessage(
+  //           `[APP]hit area: [${LAppDefine.HitAreaNameBody}]`
+  //         );
+  //       }
 
-        const prompt: string = (document.getElementById("prompt") as any).value;
-        const language: string = (document.getElementById("language") as any).value;
-        const azureAi = new AzureAi();
-        azureAi.getOpenAiAnswer(prompt)
-          .then(ans => azureAi.getSpeechUrl(language, ans))
-          .then(url => {
-            this._models.at(i)._wavFileHandler.loadWavFile(url);
-            this._models
-              .at(i)
-              .startRandomMotion(
-                LAppDefine.MotionGroupTapBody,
-                LAppDefine.PriorityNormal,
-                this._finishedMotion
-              );
-          });
+  //       const prompt: string = (document.getElementById("prompt") as any).value;
+  //       const language: string = (document.getElementById("language") as any).value;
+  //       const azureAi = new AzureAi();
+  //       azureAi.getOpenAiAnswer(prompt)
+  //         .then(ans => azureAi.getSpeechUrl(language, ans))
+  //         .then(url => {
+  //           this._models.at(i)._wavFileHandler.loadWavFile(url);
+  //           this._models
+  //             .at(i)
+  //             .startRandomMotion(
+  //               LAppDefine.MotionGroupTapBody,
+  //               LAppDefine.PriorityNormal,
+  //               this._finishedMotion
+  //             );
+  //         });
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
 
-  public startVoiceConversation(language: string, data: Blob) {
+  public async startVoiceConversation(language: string, prompt: string, log: Chatlog[] , data?: Blob): Promise<string> {
     for (let i = 0; i < this._models.getSize(); i++) {
       if (LAppDefine.DebugLogEnable) {
         LAppPal.printMessage(
           `startConversation`
-        );
-        const azureAi = new AzureAi();
+        )
 
-      //   azureAi.getTextFromSpeech(language, data)
-      //     .then(text => {
-      //       (document.getElementById("prompt") as any).value = text;
-      //       return azureAi.getOpenAiAnswer(text);
-      //     }).then(ans => azureAi.getSpeechUrl(language, ans))
-      //     .then(url => {
-      //       this._models.at(i)._wavFileHandler.loadWavFile(url);
-      //       this._models
-      //         .at(i)
-      //         .startRandomMotion(
-      //           LAppDefine.MotionGroupTapBody,
-      //           LAppDefine.PriorityNormal,
-      //           this._finishedMotion
-      //         );
-      //     });
-      // }
-      const text = (document.getElementById("prompt") as any).value
-            azureAi.getOpenAiAnswer(text)
-          .then(ans => azureAi.getSpeechUrl(language, ans))
-          .then(url => {
-            this._models.at(i)._wavFileHandler.loadWavFile(url);
-            this._models
-              .at(i)
-              .startRandomMotion(
-                LAppDefine.MotionGroupTapBody,
-                LAppDefine.PriorityNormal,
-                this._finishedMotion
-              );
-          });
+      const azureAi = new AzureAi()
+      // const text = (document.getElementById('prompt') as any).value
+      const text = prompt
+
+        const ans = await azureAi.getOpenAiAnswer(text, log)
+        const url = await azureAi.getSpeechUrl(language, ans)
+
+        this._models.at(i)._wavFileHandler.loadWavFile(url);
+        this._models
+          .at(i)
+          .startRandomMotion(
+            LAppDefine.MotionGroupTapBody,
+            LAppDefine.PriorityNormal,
+            this._finishedMotion
+          )
+
+        return ans
       }
     }
   }

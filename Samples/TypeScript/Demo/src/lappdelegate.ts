@@ -12,6 +12,7 @@ import { LAppLive2DManager } from './lapplive2dmanager';
 import { LAppPal } from './lapppal';
 import { LAppTextureManager } from './lapptexturemanager';
 import { LAppView } from './lappview';
+import { Chatlog } from './main'
 
 export let canvas: HTMLCanvasElement = null;
 export let s_instance: LAppDelegate = null;
@@ -77,7 +78,8 @@ export class LAppDelegate {
     }
 
     // キャンバスを DOM に追加
-    document.body.appendChild(canvas);
+    const canvasContainer = document.querySelector('#canvas-container')
+    canvasContainer.appendChild(canvas);
 
     if (!frameBuffer) {
       frameBuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
@@ -256,8 +258,8 @@ export class LAppDelegate {
     return this._textureManager;
   }
 
-  public startVoiceConversation(language: string, data: Blob) {
-    LAppLive2DManager.getInstance().startVoiceConversation(language, data);
+  public async startVoiceConversation(language: string, prompt: string, log: Chatlog[], data?: Blob) {
+    return LAppLive2DManager.getInstance().startVoiceConversation(language, prompt, log, data);
   }
 
   /**
