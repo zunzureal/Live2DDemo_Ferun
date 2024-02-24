@@ -271,6 +271,9 @@
 
       $('#recButton').addClass("notRec");
       $('#recButton').click(() => {
+        startVoiceConversation($("#language").val(),
+          new Blob([], { type: 'audio/webm' }));
+
         if ($('#recButton').hasClass('notRec')) {
           $('#recButton').removeClass("notRec");
           $('#recButton').addClass("Rec");
@@ -281,7 +284,8 @@
         else {
           $('#recButton').removeClass("Rec");
           $('#recButton').addClass("notRec");
-          mediaRecorder.stop();
+          console.log(mediaRecorder)
+          // mediaRecorder.stop();
           recordedChunks = [];
         }
       });

@@ -1,6 +1,7 @@
 import { LAppPal } from "./lapppal";
 import { getWaveBlob } from "webm-to-wav-converter";
 import { LANGUAGE_TO_VOICE_MAPPING_LIST } from "./languagetovoicemapping";
+import axios from 'axios'
 
 
 export class AzureAi {
@@ -36,7 +37,12 @@ export class AzureAi {
 
     const conversation = conversations + "\n\n## " + prompt
     const m = {
-      "prompt": `##${conversation}\n\n`,
+      "messages": [
+        {
+          role: 'user',
+          content: `##${conversation}\n\n`,
+        }
+      ],
       "max_tokens": 300,
       "temperature": 0,
       "frequency_penalty": 0,
@@ -45,16 +51,26 @@ export class AzureAi {
       "stop": ["#", ";"]
     }
 
-    const repsonse = await fetch(this._openaiurl, {
-      method: 'POST',
+    // const repsonse = await fetch(this._openaiurl, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'api-key': this._openaipikey,
+    //   },
+    //   body: JSON.stringify(m)
+    // });
+
+    const response = await axios.post(this._openaiurl, m, {
       headers: {
         'Content-Type': 'application/json',
         'api-key': this._openaipikey,
-      },
-      body: JSON.stringify(m)
-    });
-    const json = await repsonse.json();
-    const answer: string = json.choices[0].text
+      }
+    })
+    // const json = await repsonse.json();
+    // console.log('response', response)
+
+    const answer: string = response.data.choices[0].message.content
+
     LAppPal.printMessage(answer);
     (document.getElementById("reply") as any).value = answer;
     (document.getElementById("conversations") as any).value = conversations + "\n\n" + answer;

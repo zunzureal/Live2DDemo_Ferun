@@ -145,11 +145,25 @@ export class LAppLive2DManager {
         );
         const azureAi = new AzureAi();
 
-        azureAi.getTextFromSpeech(language, data)
-          .then(text => {
-            (document.getElementById("prompt") as any).value = text;
-            return azureAi.getOpenAiAnswer(text);
-          }).then(ans => azureAi.getSpeechUrl(language, ans))
+      //   azureAi.getTextFromSpeech(language, data)
+      //     .then(text => {
+      //       (document.getElementById("prompt") as any).value = text;
+      //       return azureAi.getOpenAiAnswer(text);
+      //     }).then(ans => azureAi.getSpeechUrl(language, ans))
+      //     .then(url => {
+      //       this._models.at(i)._wavFileHandler.loadWavFile(url);
+      //       this._models
+      //         .at(i)
+      //         .startRandomMotion(
+      //           LAppDefine.MotionGroupTapBody,
+      //           LAppDefine.PriorityNormal,
+      //           this._finishedMotion
+      //         );
+      //     });
+      // }
+      const text = (document.getElementById("prompt") as any).value
+            azureAi.getOpenAiAnswer(text)
+          .then(ans => azureAi.getSpeechUrl(language, ans))
           .then(url => {
             this._models.at(i)._wavFileHandler.loadWavFile(url);
             this._models

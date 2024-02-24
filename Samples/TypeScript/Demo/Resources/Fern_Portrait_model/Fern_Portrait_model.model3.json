@@ -1,0 +1,29 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Fern_Portrait_model.moc3",
+		"Textures": [
+			"Fern_Portrait_model.1024/texture_00.png"
+		],
+		"Physics": "Fern_Portrait_model.physics3.json",
+		"DisplayInfo": "Fern_Portrait_model.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"PARAM_MOUTH_FORM",
+				"PARAM_MOUTH_OPEN_Y"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"PARAM_EYE_L_OPEN",
+				"PARAM_EYE_R_OPEN"
+			]
+		}
+	]
+}
