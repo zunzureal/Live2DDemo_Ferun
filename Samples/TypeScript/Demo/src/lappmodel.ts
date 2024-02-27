@@ -442,7 +442,6 @@ export class LAppModel extends CubismUserModel {
    * 更新
    */
 
-
   public update(): void {
     if (this._state != LoadStep.CompleteSetup) return;
 
@@ -537,7 +536,6 @@ export class LAppModel extends CubismUserModel {
       audio.play();
     }
     this._model.update();
-
   }
 
   /**
@@ -554,7 +552,6 @@ export class LAppModel extends CubismUserModel {
     priority: number,
     onFinishedMotionHandler?: FinishedMotionCallback
   ): CubismMotionQueueEntryHandle {
-
     if (priority == LAppDefine.PriorityForce) {
       this._motionManager.setReservePriority(priority);
     } else if (!this._motionManager.reserveMotion(priority)) {

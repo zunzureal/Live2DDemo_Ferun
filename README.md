@@ -62,7 +62,7 @@ Enter `>Tasks: Run Task` in the command palette (*View > Command Palette...*) to
 1. Select `npm: install - Samples/TypeScript/Demo` from the task list to download the dependent packages
 1. Select `npm: build - Samples/TypeScript/Demo` from the task list to build the sample demo
 1. Select `npm: serve - Samples/TypeScript/Demo` from the task list to start the simple server for operation check
-1. Enter `http://localhost:5000/Samples/TypeScript/Demo/` in the URL field of your browser to access it
+1. Enter `http://localhost:8080/Samples/TypeScript/Demo/` in the URL field of your browser to access it
 1. Enter `>Tasks: Terminate Task` from the command palette and select `npm: serve` to terminate the simple server
 
 For other tasks, see [README.md](Samples/TypeScript/README.md) of the sample project.

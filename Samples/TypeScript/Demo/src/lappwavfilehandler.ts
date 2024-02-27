@@ -5,8 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-
-
 export let s_instance: LAppWavFileHandler = null;
 
 export class LAppWavFileHandler {
@@ -75,15 +73,14 @@ export class LAppWavFileHandler {
     }
     rms = Math.sqrt(
       rms /
-      (this._wavFileInfo._numberOfChannels *
-        (goalOffset - this._sampleOffset))
+        (this._wavFileInfo._numberOfChannels *
+          (goalOffset - this._sampleOffset))
     );
 
     this._lastRms = rms;
     this._sampleOffset = goalOffset;
     return true;
   }
-
 
   public start(filePath: string): void {
     // サンプル位参照位置を初期化
@@ -92,7 +89,6 @@ export class LAppWavFileHandler {
 
     // RMS値をリセット
     this._lastRms = 0.0;
-
   }
 
   public getRms(): number {

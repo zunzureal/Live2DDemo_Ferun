@@ -12,7 +12,7 @@ import { LAppLive2DManager } from './lapplive2dmanager';
 import { LAppPal } from './lapppal';
 import { LAppTextureManager } from './lapptexturemanager';
 import { LAppView } from './lappview';
-import { Chatlog } from './main'
+import { Chatlog } from './main';
 
 export let canvas: HTMLCanvasElement = null;
 export let s_instance: LAppDelegate = null;
@@ -78,7 +78,7 @@ export class LAppDelegate {
     }
 
     // キャンバスを DOM に追加
-    const canvasContainer = document.querySelector('#canvas-container')
+    const canvasContainer = document.querySelector('#canvas-container');
     canvasContainer.appendChild(canvas);
 
     if (!frameBuffer) {
@@ -258,8 +258,18 @@ export class LAppDelegate {
     return this._textureManager;
   }
 
-  public async startVoiceConversation(language: string, prompt: string, log: Chatlog[], data?: Blob) {
-    return LAppLive2DManager.getInstance().startVoiceConversation(language, prompt, log, data);
+  public async startVoiceConversation(
+    language: string,
+    prompt: string,
+    log: Chatlog[],
+    data?: Blob
+  ) {
+    return LAppLive2DManager.getInstance().startVoiceConversation(
+      language,
+      prompt,
+      log,
+      data
+    );
   }
 
   /**
@@ -441,4 +451,3 @@ function onTouchCancel(e: TouchEvent): void {
 
   LAppDelegate.getInstance()._view.onTouchesEnded(posX, posY);
 }
-

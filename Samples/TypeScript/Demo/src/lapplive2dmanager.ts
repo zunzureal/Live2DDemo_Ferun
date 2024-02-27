@@ -14,7 +14,7 @@ import * as LAppDefine from './lappdefine';
 import { canvas } from './lappdelegate';
 import { LAppModel } from './lappmodel';
 import { LAppPal } from './lapppal';
-import { Chatlog } from './main'
+import { Chatlog } from './main';
 
 export let s_instance: LAppLive2DManager = null;
 
@@ -138,19 +138,22 @@ export class LAppLive2DManager {
   //   }
   // }
 
-  public async startVoiceConversation(language: string, prompt: string, log: Chatlog[] , data?: Blob): Promise<string> {
+  public async startVoiceConversation(
+    language: string,
+    prompt: string,
+    log: Chatlog[],
+    data?: Blob
+  ): Promise<string> {
     for (let i = 0; i < this._models.getSize(); i++) {
       if (LAppDefine.DebugLogEnable) {
-        LAppPal.printMessage(
-          `startConversation`
-        )
+        LAppPal.printMessage(`startConversation`);
 
-      const azureAi = new AzureAi()
-      // const text = (document.getElementById('prompt') as any).value
-      const text = prompt
+        const azureAi = new AzureAi();
+        // const text = (document.getElementById('prompt') as any).value
+        const text = prompt;
 
-        const ans = await azureAi.getOpenAiAnswer(text, log)
-        const url = await azureAi.getSpeechUrl(language, ans)
+        const ans = await azureAi.getOpenAiAnswer(text, log);
+        const url = await azureAi.getSpeechUrl(language, ans);
 
         this._models.at(i)._wavFileHandler.loadWavFile(url);
         this._models
@@ -159,9 +162,9 @@ export class LAppLive2DManager {
             LAppDefine.MotionGroupTapBody,
             LAppDefine.PriorityNormal,
             this._finishedMotion
-          )
+          );
 
-        return ans
+        return ans;
       }
     }
   }
