@@ -86,6 +86,7 @@ export class LAppDelegate {
     }
 
     // 透過設定
+    // look on a mouse hover
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
